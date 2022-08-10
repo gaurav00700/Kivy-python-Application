@@ -1,0 +1,12 @@
+cryptography
+kivy
+kivymd
+kiwisolver
+matplotlib
+numpy
+pandas
+plyer
+pync
+#tensorflow
+datetime
+pysqlite3

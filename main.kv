@@ -1,0 +1,710 @@
+WindowManager:
+    Login:
+    CreateAcc:
+    MainPage:
+    Settings_page:
+    Graph:
+
+<Login>
+    #:set fs "16dp"
+    #:set w "250dp"
+    #:set bw "0.25dp"
+    #:set bh "0.03dp"
+    name:"login"
+    canvas.before:
+        Rectangle:
+            size: self.size
+            pos: self.pos
+            source: "background.png"
+    on_leave:
+        root.ids.user.text=""
+        root.ids.Pass.text=""
+        root.ids.approved.text=""
+    Screen:
+        size:root.height,root.width
+
+        MDLabel:
+            text:"Hello ¯\(°_°)/¯"
+            font_size: "30dp"
+            color: (0,0,0,1)
+            pos_hint:{'x':0,'y':0.35}
+            halign: 'center'
+            valign: 'center'
+            bold: True
+
+        MDTextFieldRound:
+            id: user
+            hint_text:"username"
+            icon_right:"account"
+            theme_text_color: "Primary"
+            text_color: 0, 0, 0, 1
+            size_hint: None, 0.06
+            width: w
+            font_size: fs
+            pos_hint: {'center_x':0.5, 'center_y':0.65}
+
+        MDTextFieldRound:
+            id: Pass
+            hint_text:"password"
+            icon_right:"key-variant" #key-variant / eye-off and icon_right/icon_left
+            helper_text: "This will disappear when you click off"
+            helper_text_mode: "on_focus"
+            theme_text_color: "Primary"
+            # normal_color: app.theme_cls.accent_color #default from theme 
+            text_color: 0, 0, 0, 1
+            size_hint:None, 0.06
+            width: w
+            font_size: fs
+            pos_hint: {'center_x':0.5, 'center_y':0.55}
+            password:True
+
+        MDRoundFlatButton:
+            text:"Login"
+            font_size:fs
+            size_hint:None,None
+            pos_hint: {'center_x':0.5, 'center_y':0.4}
+            size_hint: bw, 0.06   #can be put None, None for automatic size as per text
+            theme_text_color: "Primary"
+            text_color: 0, 0, 0, 1
+            on_release:
+                root.verify_credentials()   #Action1 mutiple actions can be assigned
+                                            #Action2
+        MDRoundFlatButton:
+            text:"Create Account"
+            font_size:fs
+            size_hint: bw, 0.06   #can be put None, None for automatic size as per text
+            pos_hint: {'center_x':0.5, 'center_y':0.3}
+            theme_text_color: "Primary"
+            text_color: 0, 0, 0, 1
+            on_release:
+                root.manager.current = 'createacc'  #Action1 mutiple actions can be assigned
+                                                    #Action2
+
+        MDLabel:
+            id: approved
+            text:""
+            font_size:fs
+            pos_hint: {'center_x':0.5, 'center_y':0.2}
+            halign: "center"
+            theme_text_color: "Primary"
+            text_color:
+
+<CreateAcc>:
+    name:"createacc"
+    #:set r 0.2
+    canvas.before:
+        Rectangle:
+            size: self.size
+            pos: self.pos
+            source: "background.png"
+    on_leave: 
+        root.ids.Cname.text=""
+        root.ids.Cpass.text=""
+    Screen:
+        size:root.height,root.width
+
+        MDLabel:
+            text:"Enter details for new account"
+            font_size: fs
+            color: (0,0,0,1)
+            # pos_hint:{'x':0,'y':0.35}
+            pos_hint: {'center_x':0.5, 'center_y':0.75}
+            halign: 'center'
+            valign: 'center'
+            bold: True
+
+        MDTextFieldRound:
+            id: Cname
+            hint_text:"username"
+            icon_right:"account"
+            theme_text_color: "Primary"
+            text_color: 0, 0, 0, 1
+            size_hint:None, 0.06
+            width: w
+            font_size: fs
+            pos_hint: {'center_x':0.5, 'center_y':0.65}
+
+        MDTextFieldRound:
+            id: Cpass
+            hint_text:"password"
+            icon_right:"key-variant" #key-variant and eye-off
+            theme_text_color: "Primary"
+            text_color: 0, 0, 0, 1
+            size_hint:None, 0.06
+            width: w
+            font_size: fs
+            pos_hint: {'center_x':0.5, 'center_y':0.55}
+
+        MDRoundFlatButton:
+            text:"Save"
+            pos_hint: {"center_x": 0.7, 'y': 0.4}
+            font_size: fs
+            size_hint:0.35, 0.06
+            theme_text_color: "Primary"
+            text_color: 0, 0, 0, 1
+            on_release: root.create_save() #start create_save function
+        MDRoundFlatButton:
+            text:"Cancel"
+            pos_hint: {'center_x':0.3, 'y':0.4}
+            font_size: fs
+            size_hint:0.35, 0.06
+            theme_text_color: "Primary"
+            text_color: 0, 0, 0, 1
+            on_release: app.root.current = 'login' #for redirecting to login page           
+
+<MainPage>
+    name:"mainpage"   
+    canvas.before:
+        Rectangle:
+            size: self.size
+            pos: self.pos
+            source: "background.png"         
+    on_pre_enter:
+        root.ids.x_label.text='X (m/sec2)| 0.00'
+        root.ids.y_label.text='Y (m/sec2)| 0.00'
+        root.ids.z_label.text='Z (m/sec2)| 0.00'
+    MDScreen:
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            BoxLayout:
+                orientation: 'vertical'
+                padding: "40dp"
+                spacing: "10dp"
+                size_hint_y: None
+                height: self.minimum_height #automatically adjust the height 
+                
+                #Movement Anaylsis
+                MDCard:
+                    orientation: "vertical"
+                    padding: "5dp"
+                    spacing: "5dp"
+                    size_hint: None, None
+                    size: "250dp",  self.minimum_height
+                    pos_hint: {"center_x": .5, 'top': 1}
+                    line_color: 0.2, 0.2, 0.2, 0.3  
+                    border_radius: 20 #round corner cards
+                    radius: [15] #round radius          
+
+                    MDLabel:
+                        text: "Movement Anaylsis"
+                        theme_text_color: "Primary"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    MDSeparator:
+                        height: "2dp"
+
+                    MDLabel:
+                        id: prd_val
+                        text: " "
+                        theme_text_color: "Primary"
+                        size_hint_y: None
+                        height: "20dp"
+                        font_size: fs
+                        markup: True
+                
+                #Accelerometer Values
+                MDCard:
+                    orientation: "vertical"
+                    padding: "5dp"
+                    spacing: "5dp"
+                    size_hint: None, None
+                    size: "250dp",  self.minimum_height
+                    pos_hint: {"center_x": .5, 'top': 1}
+                    line_color: 0.2, 0.2, 0.2, 0.3
+                    border_radius: 20 #round corner cards
+                    radius: [15] #round radius
+
+                    MDLabel:
+                        text: "Acceleration Values:"
+                        theme_text_color: "Primary"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    MDSeparator:
+                        height: "2dp"
+
+                    MDLabel:
+                        id: x_label
+                        text: ""
+                        font_size: "13dp"
+                        theme_text_color: "Primary"            
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                    
+                    # MDLabel:
+                    #     text: "Y (m/sec2):"
+                    #     theme_text_color: "Primary"
+                    #     font_size: fs
+                    #     size_hint: 1, .5 #in percentage of grid lxw
+                    #     halign: "left"
+                    #     valign: "middle" 
+                    MDLabel:
+                        id: y_label
+                        text: ""
+                        font_size: "13dp"
+                        theme_text_color: "Primary"            
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    # MDLabel:
+                    #     text: "Z (m/sec2):"
+                    #     theme_text_color: "Primary"
+                    #     font_size: fs
+                    #     size_hint: 1, .5 #in percentage of grid lxw
+                    #     halign: "left"
+                    #     valign: "middle"
+                    MDLabel:
+                        id: z_label
+                        text: ""
+                        font_size: "13dp"
+                        theme_text_color: "Primary"            
+                        size_hint_y: None
+                        height: self.texture_size[1]
+        
+                #Checkin,checkout & notification
+                MDCard:
+                    orientation: "vertical"
+                    padding: "5dp"
+                    spacing: "5dp"
+                    size_hint: None, None
+                    size: "250dp", self.minimum_height
+                    pos_hint: {"center_x": .5, 'top': 1}
+                    # pos_hint: {"center_x": .5, 'centre_y': }
+                    line_color: 0.2, 0.2, 0.2, 0.3
+                    border_radius: 20 #round corner cards
+                    radius: [15] #round radius
+                    
+                    GridLayout:
+                        cols: 3
+                        orientation: "tb-lr"
+                        size_hint_y: None
+                        height: '70dp' #self.minimum_height
+                        padding: "5dp"
+                        spacing: "5dp"
+
+                        MDIconButton:
+                            icon: 'location-enter'
+                            halign: 'center'
+                            on_release: root.acc_toggle_start()
+                        MDLabel:
+                            text: "Check-in"
+                            theme_text_color: "Primary"
+                            font_size: "12dp"
+                            # halign: 'center'
+                            # valign: "top"
+
+                        MDIconButton:
+                            icon: 'location-exit'
+                            halign: 'center'
+                            on_release: root.acc_toggle_stop()
+
+                        MDLabel:
+                            text: "Check-out"
+                            theme_text_color: "Primary"
+                            font_size: "12dp"
+                            # halign: 'center'
+                            # valign: "top"
+
+                        MDIconButton:
+                            icon: 'alarm'
+                            halign: 'center'
+                            on_release: root.toggle_notification()
+                            halign: 'center'
+                        
+                        MDLabel:
+                            id:notify
+                            text: "Notification ON"
+                            theme_text_color: "Primary"
+                            font_size: "12dp"
+                            halign: 'center'
+                            # valign: "top"
+
+                #Motivation Tasks
+                MDCard:
+                    orientation: "vertical"
+                    padding: "5dp"
+                    spacing: "5dp"
+                    size_hint: None, None
+                    size: "250dp",  self.minimum_height
+                    pos_hint: {"center_x": .5, 'top': 1}
+                    # line_color: 0.2, 0.2, 0.2, 0.3
+                    border_radius: 20 #round corner cards
+                    radius: [15] #round radius
+
+                    MDLabel:
+                        text: "Motivation Tasks"
+                        theme_text_color: "Primary"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                    MDSeparator:
+                        height: "2dp"
+
+                    GridLayout:
+                        cols: 2
+                        orientation: "lr-tb"
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: "8dp"                        
+
+                        MDCheckbox:
+                            size_hint: None, None
+                            size: "40dp", motivation_text.height
+                            pos_hint: {'center_x': .5, 'center_y': .5}
+                        MDLabel:
+                            id: motivation_text
+                            text: "10 minutes Run"
+                            theme_text_color: "Primary"
+                            font_size: fs
+                            size: self.texture_size
+
+                    GridLayout:
+                        cols: 2
+                        orientation: "lr-tb"
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: "8dp"
+
+                        MDCheckbox:
+                            size_hint: None, None
+                            size: "40dp", motivation_text.height
+                            pos_hint: {'center_x': .5, 'center_y': .5}
+                        MDLabel:
+                            id: motivation_text
+                            text: "15 minutes Run"
+                            theme_text_color: "Primary"
+                            font_size: fs
+                            size: self.texture_size
+
+                    GridLayout:
+                        cols: 2
+                        orientation: "lr-tb"
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: "8dp"
+
+                        MDCheckbox:
+                            size_hint: None, None
+                            size: "40dp", motivation_text.height
+                            pos_hint: {'center_x': .5, 'center_y': .5}
+                        MDLabel:
+                            id: motivation_text
+                            text: "15 minutes Walk"
+                            theme_text_color: "Primary"
+                            font_size: fs
+                            size: self.texture_size
+
+                    GridLayout:
+                        cols: 2
+                        orientation: "lr-tb"
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: "10dp"
+
+                        MDCheckbox:
+                            size_hint: None, None
+                            size: "40dp", motivation_text.height
+                            pos_hint: {'center_x': .5, 'center_y': .5}
+                        MDLabel:
+                            id: motivation_text
+                            text: "30 minutes Walk"
+                            theme_text_color: "Primary"
+                            font_size: fs
+                            size: self.texture_size
+
+                    GridLayout:
+                        cols: 2
+                        orientation: "lr-tb"
+                        size_hint_y: None
+                        height: self.minimum_height
+                        height: self.minimum_height
+                        # row_force_default: True
+                        # padding: "10dp"
+                        spacing: "10dp"
+                        halign: "center"
+                        valign: "middle" 
+
+                        AnchorLayout: #pull are button in centre of grid
+                            size_hint_y: None
+                            height: Remind_me.height
+                            MDRoundFlatButton:
+                                text: "Remind me"
+                                id: Remind_me
+                                font_size: fs
+                                size_hint: 1, 1 #in percentage of grid lxw
+                                theme_text_color: "Primary"
+                                pos_hint: {"center_x":0.5} 
+                        AnchorLayout: #pull are button in centre of grid
+                            size_hint_y: None
+                            height: graph.height                             
+                            MDRoundFlatButton:
+                                text: "Graph"
+                                id: graph
+                                font_size: fs
+                                size_hint: 1, 1 #in percentage of grid lxw
+                                theme_text_color: "Primary"
+                                pos_hint: {"center_x":0.5} 
+                                on_release: app.root.current = 'graph'
+                        AnchorLayout: #pull are button in centre of grid
+                            size_hint_y: None
+                            height: setting.height
+                            MDRoundFlatButton:
+                                text: "Settings"
+                                id: setting
+                                font_size: fs
+                                size_hint: 1, 1 #in percentage of grid lxw
+                                theme_text_color: "Primary"
+                                pos_hint: {'center_x':0.8}
+                                on_release: app.root.current = 'setting'                           
+                        AnchorLayout: #pull are button in centre of grid
+                            size_hint_y: None
+                            height: logout.height
+                            MDRoundFlatButton:
+                                text: "Logout"
+                                id:logout
+                                font_size: fs
+                                size_hint: 1, 1 #in percentage of grid lxw
+                                theme_text_color: "Primary"
+                                pos_hint: {'center_x':0.5}
+                                on_release: app.root.current = 'login'
+                                on_release: root.acc_toggle_stop()
+
+<Graph>
+    name:"graph"
+    canvas.before:
+        Rectangle:
+            size: self.size
+            pos: self.pos
+            source: "background.png" 
+    Screen:
+        size:root.height,root.width  
+
+        MDRoundFlatButton:
+            id:MMM
+            text:"Select"
+            font_size: fs
+            theme_text_color: "Primary"
+            pos_hint: {"center_x":0.3,'y': 0.3}
+            size_hint:0.35, 0.06
+            on_release:root.dropdown()
+        MDRoundFlatButton:
+            text: 'Back'
+            font_size: fs
+            theme_text_color: "Primary"
+            size_hint:0.35, 0.06
+            pos_hint: {'center_x': 0.7,'y': 0.3}                    
+            on_release: app.root.current = 'mainpage'
+        FitImage:
+            id:graph
+            size_hint_x:None
+            size_hint_y:None
+            width: '300dp'
+            height: '300dp'
+            allow_stretch: False
+            source:''
+            pos_hint: {'center_x': 0.5,'center_y': 0.65}
+
+
+<Settings_page>
+    name:"setting"
+    on_pre_enter:
+        root.sensors_detail()
+    on_leave:
+        root.ids.Sname.text=""
+        root.ids.Sage.text=""
+        root.ids.Sweight.text=""
+        root.ids.Sheight.text=""
+        root.ids.Sjob.text=""
+    canvas.before:
+        Rectangle:
+            size: self.size
+            pos: self.pos
+            source: "background.png" 
+    Screen:
+        size:root.height,root.width
+                
+        MDLabel:
+            text: "Settings"
+            bold: True
+            font_size: "30dp"
+            theme_text_color: "Primary"
+            size_hint_y: None
+            height: self.texture_size[1]
+            pos_hint: {'center_x':0.5, 'center_y':0.93}
+            halign: 'center'
+            valign: 'center'
+                    
+        MDTextFieldRound:
+            id: Sname
+            hint_text:"Name"
+            # icon_right:"eye-off"
+            theme_text_color: "Primary"
+            text_color: 0, 0, 0, 1
+            size_hint:None, 0.06
+            width: w
+            font_size: fs
+            pos_hint: {'center_x':0.5, 'center_y':0.85}
+            halign: 'center'
+            valign: 'center'
+
+        MDTextFieldRound:
+            id: Sage
+            hint_text:"Age"
+            # icon_right:"eye-off"
+            theme_text_color: "Primary"
+            text_color: 0, 0, 0, 1
+            size_hint:None, 0.06
+            width: w
+            font_size: fs
+            pos_hint: {'center_x':0.5, 'center_y':0.75}
+            halign: 'center'
+            valign: 'center'
+
+        MDTextFieldRound:
+            id: Sweight
+            hint_text:"Weight (Kg)"
+            # icon_right:"eye-off"
+            theme_text_color: "Primary"
+            text_color: 0, 0, 0, 1
+            size_hint:None, 0.06
+            width: w
+            font_size: fs
+            pos_hint: {'center_x':0.5, 'center_y':0.65} 
+            halign: 'center'
+            valign: 'center'
+
+        MDTextFieldRound:
+            id: Sheight
+            hint_text:"Height (m)"
+            # icon_right:"eye-off"
+            theme_text_color: "Primary"
+            text_color: 0, 0, 0, 1
+            size_hint:None, 0.06
+            width: w
+            font_size: fs
+            pos_hint: {'center_x':0.5, 'center_y':0.55} 
+            halign: 'center'
+            valign: 'center'
+           
+        MDTextFieldRound:
+            id: Sjob
+            hint_text:"Job position"
+            # icon_right:"eye-off"
+            theme_text_color: "Primary"
+            text_color: 0, 0, 0, 1
+            size_hint:None, 0.06
+            width: w
+            font_size: fs
+            pos_hint: {'center_x':0.5, 'center_y':0.45} 
+            halign: 'center'
+            valign: 'center'
+             
+        MDRoundFlatButton:
+            text: "Save"
+            font_size: fs
+            theme_text_color: "Primary"
+            pos_hint: {"center_x":0.2, 'y': 0.32}
+            size_hint:0.25, 0.06
+            on_release: root.add()
+
+
+        MDRoundFlatButton:
+            text: "Show"
+            font_size: fs
+            theme_text_color: "Primary"
+            pos_hint: {"center_x":0.50, 'y': 0.32}
+            size_hint:0.25, 0.06
+            on_release: root.show_details()
+
+        MDRoundFlatButton:
+            text: "Back"
+            font_size: fs
+            theme_text_color: "Primary"
+            pos_hint: {"center_x":0.80, 'y': 0.32}
+            size_hint:0.25, 0.06
+            on_release: app.root.current = 'mainpage'
+
+        MDRoundFlatButton:
+            text: "Notification/Hr"
+            id: notify_hr
+            font_size: fs
+            theme_text_color: "Primary"
+            pos_hint: {"center_x":0.5, 'y': 0.24}
+            size_hint:None, 0.06
+            on_release: root.notify_hr()
+
+        MDCard:
+            orientation: "vertical"
+            padding: "10dp"
+            spacing: "5dp"
+            size_hint: None, None
+            size: "260dp", self.minimum_height #width and height (self.minimum_height)
+            border_radius: 20 #round corner cards
+            radius: [15] #round radius
+            pos_hint: {"center_x": .5, 'center_y': .12} #position
+            line_color: 0.2, 0.2, 0.2, 0.3
+
+            MDLabel:
+                text: "Sensors Access"
+                theme_text_color: "Primary"
+                size_hint_y: None
+                height: self.texture_size[1]
+
+            MDSeparator:
+                height: "2dp"
+                theme_text_color: "Primary"
+            
+            GridLayout:
+                cols: 2
+                orientation: "lr-tb" #left-right and top-bottom
+                size_hint_y: None
+                height: '50dp'
+                padding: "5dp"
+                spacing: "7dp"
+
+                MDLabel:
+                    text: "Accelerometer :"
+                    theme_text_color: "Primary"
+                    font_size: fs
+                    size_hint: 1, .6 #in percentage of grid lxw
+                    halign: "left"
+                    valign: "middle"                  
+                MDLabel:
+                    id: acc_chk
+                    text:''
+                    theme_text_color: "Primary"
+                    size_hint: 1, .6 #in percentage of grid lxw
+                    font_size: "13dp"
+                    markup: True
+
+                MDLabel:
+                    text: "Memory :"
+                    theme_text_color: "Primary"
+                    font_size: fs
+                    size_hint: 1, .6 #in percentage of grid lxw
+                    halign: "left"
+                    valign: "middle" 
+                MDLabel:
+                    id: disk_chk
+                    text:''
+                    theme_text_color: "Primary"
+                    size_hint: 1, .6 #in percentage of grid lxw
+                    font_size: fs
+                    markup: True
+                
+                MDLabel:
+                    text: "Notification :"
+                    theme_text_color: "Primary"
+                    font_size: fs
+                    size_hint: 1, .6 #in percentage of grid lxw
+                    halign: "left"
+                    valign: "middle"                     
+                MDLabel:
+                    id: noti_chk
+                    text:''
+                    theme_text_color: "Primary"
+                    size_hint: 1, .6 #in percentage of grid lxw
+                    font_size: fs
+                    markup: True
